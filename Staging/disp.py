@@ -1,0 +1,39 @@
+from gc import collect as clean_mem
+import time
+#import pins
+from staging.pin_port import disp_spi,disp_cs, disp_dc, disp_rst, backlight
+clean_mem()
+# import easy digital io
+from tg_modules.make_ios import dio
+clean_mem()
+
+
+#start backlight in off position
+backlite = dio(backlight,0,False)
+backlite.value = False
+del backlight
+clean_mem()
+
+#imports
+from TG_Modules.TG_RGB.rgb import colorst as color
+from TG_Modules.TG_RGB.st7735r import ST7735R
+
+#setup the display as a car named "disp"
+disp = ST7735R(disp_spi, cs=dio(disp_cs),dc=dio(disp_dc),rst=dio(disp_rst),rotation = 1 )
+
+#reset again
+disp.reset()
+disp.init()
+
+del disp_spi,disp_cs, disp_dc, disp_rst
+clean_mem()
+
+
+
+#start with black screen and elimiate noise
+disp.fill(0)
+backlite.value = True
+    
+
+
+      
