@@ -27,6 +27,8 @@ this can also be used as a an identifier to see if an object is a gui one'''
         
     def refresh(self):
         pass
+
+
 ### blank gui object####
 #### empty gui object
 class igo(ego):
@@ -45,7 +47,7 @@ class igo(ego):
 #button
 ##################################
 class button(ego):
-    def __init__(self,x,y, width, height, r , text = '' , purpose_tasks = None,
+    def __init__(self,x,y, width, height, r , text = '' , purpose_func = None, purpose_tup = (),
                     x_offset = 0, y_offset = 0, implement = 1,
                     color = io.button_color_norm,
                     clear_color = io.button_clear_color,
@@ -66,24 +68,24 @@ class button(ego):
         self.text_color_sel = io.text_color_sel
         
         #if told to (ie save toime by not implementing )
-        if implement:
+
             #position
-            self.x = x
-            self.y = y
-            #shape
-            self.width = width
-            self.height = height
-            self.r = r
-            #content
-            self.text = text
-            # text offsets
-            self.x_offset = x_offset 
-            self.y_offset = y_offset
+        self.x = x
+        self.y = y
+        #shape
+        self.width = width
+        self.height = height
+        self.r = r
+        #content
+        self.text = text
+        # text offsets
+        self.x_offset = x_offset 
+        self.y_offset = y_offset
+        
+        if purpose_tasks == None:
+            purpose_tasks = (  (print,('button: ', self, ' pressed')),  )
             
-            if purpose_tasks == None:
-                purpose_tasks = (  (print,('button: ', self, ' pressed')),  )
-                
-            self.set_purpose(purpose_tasks)
+        self.set_purpose(purpose_func,purpose_tup)
             
         
     def change_text(self, text,  x_offset = 0, y_offset = 0, place = 0):
@@ -245,7 +247,7 @@ class nidos(igo):
             for make_y in range(rows):
                 #for later to save space
                 #self.ido_list[make_x].append(but_template.copy())
-                self.ido_list[make_x].append(ido_class(0,0,0,0,0,' ',((io.fill,255),(io.fill,0)), implement =0, clear_color = background ))
+                self.ido_list[make_x].append(ido_class(0,0,0,0,0,' ',nidos_error,(self,x,y,width,height), implement =0, clear_color = background ))
                 pointer = self.ido_list[make_x][make_y]
                 pointer.relocate(cur_x, cur_y)
                 
