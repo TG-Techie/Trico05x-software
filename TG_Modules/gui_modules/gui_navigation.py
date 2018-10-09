@@ -1,5 +1,16 @@
-from tg_modules.gui_components.gui_base import selectable,navigable, io
+from tg_modules.gui_modules.gui_base import selectable,navigable, io
+import time
 
+try:
+    from tg_modules.tg_tools import get_direction
+except:
+    def get_direction(val):
+        if val < 0:
+            return -1
+        elif val == 0:
+            return 0
+        else:
+            return 1
 
 def _button_error(but):
     io.if_rect(but.x,but.y,but.width,but.height,but.radius,io.red)
@@ -158,9 +169,10 @@ class nidos(navigable):
         return self.contents[(self.cols*y)+x]
     
     def switch(self,x,y):
-        self.of(*self.selected).deselect()
-        self.selected = (x,y)
-        self.of(*self.selected).select()
+        if (x,y) != self.selected:
+            self.of(*self.selected).deselect()
+            self.selected = (x,y)
+            self.of(*self.selected).select()
     
     def place(self):
         io.rect(self.x,self.y,self.width,self.height,self.background)
@@ -172,10 +184,32 @@ class nidos(navigable):
             but.clear()
         io.rect(self.x,self.y,self.width,self.height,self.background)
     
-    def move(self,dir1,dir2 = 0):
-        next_x = self.selected[0] + bool(self.move_mode[0])
-        next_y = self.selected[1] + bool(self.move_mode[1])
-        super().move(0,0)
+    def move(self,dirx,diry = 0):
+        
+        #starting locations
+        nextx = self.selected[0]
+        nexty = self.selected[1] 
+        
+        #if that directin is acitvated in move mode add 
+        #the direction of the inputs to the next coords
+        if self.move_mode[0]:
+            nextx += get_direction(dirx)
+        if self.move_mode[1]:
+            nexty += get_direction(diry)
+        
+        #check if on my movement method superior needs to movw pages
+        sup_dir = 0
+        if (self.move_mode[0]) and not (0 <= nextx < self.cols):
+            sup_dir += get_direction(nextx)
+        if (self.move_mode[1]) and not (0 <= nexty < self.rows):
+            sup_dir += get_direction(nexty)
+        
+        try:
+            self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
+        except:
+            pass 
+        
+        self.switch(nextx % self.cols, nexty % self.rows) 
     
     def press(self):
         self.of(*self.selected).press()

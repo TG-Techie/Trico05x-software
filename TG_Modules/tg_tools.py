@@ -1,5 +1,13 @@
 from tg_modules.cp_cpython_add_backs import delattr
 
+def get_direction(val):
+    if val < 0:
+        return -1
+    elif val == 0:
+        return 0
+    else:
+        return 1
+
 class holder():
     def __init__(self):
         self.contents = []
