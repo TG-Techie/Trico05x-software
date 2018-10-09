@@ -158,18 +158,20 @@ class nidos(navigable):
                                             color_sel = button_color_sel,
                                             text_color = button_text_color,
                                             text_color_sel = button_text_color_sel))
-        self.contents = tuple( self.contents)
+        self.contents = tuple( self.contents) # space saving
         
         if place:
             self.place()
+            
         if select:
-            self.switch(0,0)
+            self.switch(0,0, force = place)
+                
     
     def of(self,x,y):
         return self.contents[(self.cols*y)+x]
     
-    def switch(self,x,y):
-        if (x,y) != self.selected:
+    def switch(self,x,y, force = 0):
+        if ((x,y) != self.selected) or (force):
             self.of(*self.selected).deselect()
             self.selected = (x,y)
             self.of(*self.selected).select()
