@@ -199,20 +199,34 @@ class nidos(navigable):
         if self.move_mode[1]:
             nexty += get_direction(diry)
         
+        chgx = 0
+        chgy = 0
+        
         #check if on my movement method superior needs to movw pages
         sup_dir = 0
         if (self.move_mode[0]) and not (0 <= nextx < self.cols):
             sup_dir += get_direction(nextx)
+            chgy += get_direction(nextx)
         if (self.move_mode[1]) and not (0 <= nexty < self.rows):
             sup_dir += get_direction(nexty)
+            chgx += get_direction(nexty)
         
         try:
             self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
         except:
             pass 
         
-        self.switch(nextx % self.cols, nexty % self.rows) 
+        self.switch((nextx+chgx) % self.cols, (nexty+chgy) % self.rows) 
+        
+        del nextx, nexty, chgx, chgy
     
-    def press(self):
-        self.of(*self.selected).press()
+    def press(self, animate = 1):
+        pointer = self.of(*self.selected)
+        if animate:
+            pointer.place( selected = True)
+            time.sleep(.075)
+            pointer.place( selected = False)
+            time.sleep(.075)
+            pointer.place( selected = True)
+        pointer.press()
         
