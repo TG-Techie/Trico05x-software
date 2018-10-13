@@ -1,5 +1,12 @@
-from tg_modules.gui_modules.gui_base import selectable,navigable, io
+#released under:
+#Attribution-NonCommercial 3.0 United States (CC BY-NC 3.0 US)
+#Author: Jonah Yolles-Murphy on Date: 10/12/18
+
+from tg_modules.gui_modules.gui_base import selectable,navigable,gui_obj, io
 import time
+
+#button assignments:
+# up, down, left, right, enter
 
 try:
     from tg_modules.tg_tools import get_direction
@@ -26,6 +33,7 @@ class button(selectable):
                     color_sel = io.button_color_sel,
                     text_color = io.text_color_norm,
                     text_color_sel = io.text_color_sel):
+        self._set_id() # YOU MUST DO THIS
         
         #physical params
         self.x = x
@@ -58,30 +66,34 @@ class button(selectable):
         if place:
             self.place()
     
-    def place(self,selected = None):
-        self.active = 1 # turn on button
+    def place(self,selected = None, active = None):
         
-        if selected == None:
-            selected = self.selected
+        if active == None:
+            self.active = 1
+            active = 1# turn on button
+        
+        if active:
+            if selected == None:
+                selected = self.selected
+                
+            if selected:
+                cur_color = self.color_sel
+                cur_text = self.text_color_sel
+            else:
+                cur_color = self.color
+                cur_text = self.text_color
             
-        if selected:
-            cur_color = self.color_sel
-            cur_text = self.text_color_sel
-        else:
-            cur_color = self.color
-            cur_text = self.text_color
-        
-        #place base shape for button
-        io.if_rect(self.x,self.y,self.width,self.height,self.radius,cur_color)
-        
-        if self.text != ' ':
-            #find/calc text dimension and location
-            text_dim = io.text_dimensions(self.x,self.y,self.text)
-            text_x = int(self.x + self.x_offset+(self.width  -text_dim[0])/2) - 1
-            text_y = int(self.y + self.y_offset+(self.height -text_dim[1])/2) - 1 
+            #place base shape for button
+            io.if_rect(self.x,self.y,self.width,self.height,self.radius,cur_color)
             
-            #place text
-            io.text(text_x,text_y,self.text,cur_text,cur_color)
+            if self.text != ' ':
+                #find/calc text dimension and location
+                text_dim = io.text_dimensions(self.x,self.y,self.text)
+                text_x = int(self.x + self.x_offset+(self.width  -text_dim[0])/2) - 1
+                text_y = int(self.y + self.y_offset+(self.height -text_dim[1])/2) - 1 
+                
+                #place text
+                io.text(text_x,text_y,self.text,cur_text,cur_color)
     
     def clear(self):
         self.active = 0
@@ -105,7 +117,7 @@ class button(selectable):
 class nidos(navigable):
     "move_mode variable input: (1,1) = move in x & y, (1,0) = move in x, (0,1) = move in y"
     
-    def __init__(self, x,y,width,height,cols,rows,radius = 0, move_mode = (1,1), superior = None,
+    def __init__(self, x,y,width,height,cols,rows,radius = 0, move_mode = (1,1), superior = navigable(0,0,0,0,place = 0),
                     x_gap = 3, y_gap = 3,
                     place = 1, select = 1,
                     color_clear = io.background_color,
@@ -114,6 +126,7 @@ class nidos(navigable):
                      button_color_sel = io.button_color_sel,
                      button_text_color = io.text_color_norm,
                      button_text_color_sel = io.text_color_sel):
+        self._set_id() # YOU MUST DO THIS
         
         #physical params
         self.x = x
@@ -129,18 +142,19 @@ class nidos(navigable):
         self.background = background
         self.color_clear = color_clear
         
-        if move_mode != (0,0):
-            self.move_mode = move_mode
-        else:
+        if move_mode == (0,0):
             move_mode = (1,1)
+            
+        self.move_mode = move_mode
         
         self.selected = (0,0)
+        self.active = 0
         
         #window that contains the panel that contains this nidos
-        if superior:
-            self.superior = superior
-        else:
-            self.superior = navigable(0,0)
+        #if superior:
+        self.superior = superior
+        #else:
+            #self.superior = navigable(0,0,0,0)
         
         #list containing buttons
         self.contents = []
@@ -158,13 +172,17 @@ class nidos(navigable):
                                             color_sel = button_color_sel,
                                             text_color = button_text_color,
                                             text_color_sel = button_text_color_sel))
-        self.contents = tuple( self.contents) # space saving
+        # this is lremoved to allow the user to cahnge the button types
+        #self.contents = tuple( self.contents) # space saving
         
         if place:
             self.place()
-            
+        
+        #print(place)
         if select:
             self.switch(0,0, force = place)
+            self.of(*self.selected).active = place
+            self.of(*self.selected).select()
                 
     
     def of(self,x,y):
@@ -177,16 +195,20 @@ class nidos(navigable):
             self.of(*self.selected).select()
     
     def place(self):
+        self.active = 1
         io.rect(self.x,self.y,self.width,self.height,self.background)
         for but in self.contents:
             but.place()
     
     def clear(self):
+        self.active = 0
         for but in self.contents:
             but.clear()
         io.rect(self.x,self.y,self.width,self.height,self.background)
     
     def move(self,dirx,diry = 0):
+        
+        if self.move_mode == (0,1): diry = (dirx or diry)
         
         #starting locations
         nextx = self.selected[0]
@@ -203,16 +225,16 @@ class nidos(navigable):
         chgy = 0
         
         #check if on my movement method superior needs to movw pages
-        sup_dir = 0
         if (self.move_mode[0]) and not (0 <= nextx < self.cols):
-            sup_dir += get_direction(nextx)
             chgy += get_direction(nextx)
         if (self.move_mode[1]) and not (0 <= nexty < self.rows):
-            sup_dir += get_direction(nexty)
             chgx += get_direction(nexty)
         
+        #print(chgx,chgy)
+        
         try:
-            self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
+            #self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
+            self.superior.move(chgx,chgy)
         except:
             pass 
         
@@ -221,12 +243,137 @@ class nidos(navigable):
         del nextx, nexty, chgx, chgy
     
     def press(self, animate = 1):
-        pointer = self.of(*self.selected)
-        if animate:
-            pointer.place( selected = True)
-            time.sleep(.075)
-            pointer.place( selected = False)
-            time.sleep(.075)
-            pointer.place( selected = True)
-        pointer.press()
+        if self.active:
+            pointer = self.of(*self.selected)
+            if animate:
+                pointer.place( selected = True, active = pointer.active)
+                time.sleep(.075)
+                pointer.place( selected = False, active = pointer.active)
+                time.sleep(.075)
+                pointer.place( selected = True, active = pointer.active)
+            pointer.press()
+
+class panel(gui_obj):
+        
+    def __init__(self,x,y,width,height, place = 1, overwite_move = 1, color_clear = io.background_color,
+                background = io.background_color):
+        self._set_id() # YOU MUST DO THIS
+        
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        
+        self.color_clear = color_clear
+        self.background = background
+        
+        self.active = 0
+        self.overwite_move = overwite_move
+        
+        self.contents = []
+        self._nav = navigable(0,0,0,0,place = 0)
+        self.cmd_dict = {}#{'<' : (self.nav.move , (-1,0)) , '>' : (self.nav.move , (1,0)) ,'^' : (self.nav.move ,(-1,0)) , 'V' : (self.nav.move , (0,1)) , 
+                            #'E' : (self.nav.press ,())}
+        
+        if place:
+            self.place()
+        
+    def place(self):
+        self.active = 1
+        io.rect(self.x,self.y,self.width,self.height,self.background)
+        for pointer in self.contents:
+            pointer.place()
+    
+    def clear(self):
+        self.active = 0
+        for pointer in self.contents:
+            pointer.clear()
+        io.rect(self.x,self.y,self.width,self.height,self.color_clear)
+    
+    def add(self, **kwargs):
+        for key,value in kwargs.items():
+            if hasattr(value, 'is_gui_obj') and hasattr(value,'_gui_id'):
+                #set into this panel isntance
+                setattr(self, key, value)
+                #add the new value the contents list
+                pointer = getattr(self, key)
+                self.contents.append( pointer )
+                
+                #print('is navigable: ',pointer.is_navigable)
+                if pointer.is_navigable:
+                    self.nav = pointer
+                
+    
+    def refresh(self):
+        if self.active:
+            for item in self.contents:
+                try:
+                    item.refresh()
+                except:
+                    pass
+    
+    @property
+    def nav(self):
+        return self._nav
+        
+    @nav.setter
+    def nav(self,val, overwite_move = None):
+        if val in self.contents:
+            self._nav = val
+            if overwite_move == None:
+                overwite_move = self.overwite_move
+            if overwite_move:
+                self.cmd_dict['<'] = (self.nav.move , (-1,0))
+                self.cmd_dict['>'] = (self.nav.move , (1,0))
+                self.cmd_dict['^'] = (self.nav.move ,(0,-1))
+                self.cmd_dict['V'] = (self.nav.move , (0,1))
+                self.cmd_dict['E'] = (self.nav.press ,())
+        else:
+            raise TypeError("TG: tried to set panel's nav to object not already in panel")
+    
+    def command(self,*args):
+        if self.active:
+            for cur_val in args:
+                try:
+                    tup_pointer = self.cmd_dict[cur_val]
+                    tup_pointer[0](*tup_pointer[1])
+                except: raise KeyError("TG: cmd key given to panel has no assigned function")
+                
+    #def add_cmd():
+    
+class window(gui_obj):
+    
+    
+    def __init__(self,x,y,width,height,color_clear = io.background_color,
+                background = io.background_color):
+        self._set_id()
+        
+        self.x = self.x
+        self.y = self.y
+        self.width = width
+        self.height = height
+        
+        self.color_clear = color_clear
+        self.background = background
+        
+        self.active = 0
+        
+        
+    
+    def place(self):
+        self.active = 1
+        
+        io.rect( self.x, self.y, self.width, self.height, self.background)
+        
+        #for loop here
+        
+    def clear(self):
+        self.active = 0
+        
+        # for loop here
+        
+        io.rect( self.x, self.y, self.width, self.height, self.color_clear)
+        
+    def add_panel(self, num = 1):
+        
         

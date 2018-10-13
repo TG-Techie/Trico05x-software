@@ -1,4 +1,8 @@
- # use this to adapt your dispay libaray to TG_GUI compatible code
+#released under:
+#Attribution-NonCommercial 3.0 United States (CC BY-NC 3.0 US)
+#Author: Jonah Yolles-Murphy on Date: 10/12/18
+
+# use this to adapt your dispay libaray to TG_GUI compatible code
 #this means please do not change the line stating with define in this document
 #only change the contense of the funct s
 
@@ -7,6 +11,7 @@
 
 # my choosen scrren library:
 from staging.disp import disp,color as disp_color
+from tg_io.std_colors import *
 
 ####enter these:
 screen_width = disp.width
@@ -48,30 +53,3 @@ def fill(color):
     del color
 
 
-
-# Defaults:
-#general:
-red = color(255,0,0)
-orange = color(255,128,0)
-yellow = color(255,255,0)
-green = color(0,255,0)
-blue = color(0,0,255)
-purple = color(128,0,255)
-white = color(255,255,255)
-black = color(0,0,0)
-
-
-background_color =  color(0,0,0)
-
-#menus and nidos' (navigatable informat  dispensing object systems)
-nidos_background =  background_color
-
-standard_color =  color(5,85,110)
-
-#buttons:
-button_color_norm = standard_color
-button_clear_color = nidos_background
-button_color_sel =  color(128,255,255)
-
-text_color_norm =  color(255,255,255)
-text_color_sel =  color(0,0,0)

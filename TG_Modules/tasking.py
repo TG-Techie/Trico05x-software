@@ -1,9 +1,6 @@
-#released under Attribution-NonCommercial 3.0 United States (CC BY-NC 3.0 US)
-#
-#see:https://creativecommons.org/licenses/by-nc/3.0/us/
-#
-#created by TG-Techie Jonah Yolles-Muprhy,
-#thanks to @sommersoft on adafruit-discord for the debuging help
+#released under:
+#Attribution-NonCommercial 3.0 United States (CC BY-NC 3.0 US)
+#Author: Jonah Yolles-Murphy on Date: 10/12/18
 #
 #version 1.0, date(us): 060118
 
