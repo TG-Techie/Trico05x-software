@@ -233,8 +233,8 @@ class nidos(navigable):
         #print(chgx,chgy)
         
         try:
-            #self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
-            self.superior.move(chgx,chgy)
+            self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
+            #self.superior.move(chgx,chgy)
         except:
             pass 
         
@@ -344,12 +344,11 @@ class panel(gui_obj):
 class window(gui_obj):
     
     
-    def __init__(self,x,y,width,height,color_clear = io.background_color,
-                background = io.background_color):
+    def __init__(self,x,y,width,height,color_clear = io.background_color, background = io.background_color):
         self._set_id()
         
-        self.x = self.x
-        self.y = self.y
+        self.x = x
+        self.y = y
         self.width = width
         self.height = height
         
@@ -358,7 +357,9 @@ class window(gui_obj):
         
         self.active = 0
         
+        self.contents = []
         
+        self.add_panel()
     
     def place(self):
         self.active = 1
@@ -374,6 +375,34 @@ class window(gui_obj):
         
         io.rect( self.x, self.y, self.width, self.height, self.color_clear)
         
-    def add_panel(self, num = 1):
+    def add_panel(self, *args):
+        
+        #decide what to iternat thorugh, if no args do once with no name
+        if not len(args):
+            iterant = range(1)
+        elif type(args[0]) == int:
+            iterant = range(args[0])
+        else:
+            iterant = args
+            
+        for val in iterant:
+            #find internal panel number
+            panel_num = len(self.contents)
+            #name the std name
+            panel_name = '_panel'+str(panel_num)
+            
+            #add std named panel to self
+            setattr(self,panel_name, panel(self.x,self.y,self.width,self.height, color_clear = self.color_clear,
+                background = self.background))
+                
+            #add to contents
+            self.contents.append(getattr(self,panel_name))
+                
+            # if val is str set and panel name
+            
+            
+    def move(self,direction):
+        pass
+        
         
         
