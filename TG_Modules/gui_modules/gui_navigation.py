@@ -28,7 +28,7 @@ def _button_error(but):
     but.place()
 
 class button(selectable):
-    def __init__(self,x,y,width,height,radius = 0, text = ' ', purpose_func = None, purpose_tup = (),
+    def __init__(self,x,y,width,height,radius = 0, text = ' ', text_size = 1, purpose_func = None, purpose_tup = (),
                     x_offset = 0, y_offset = 0, place = 1,
                     color = io.button_color_norm,
                     color_clear = io.button_clear_color,
@@ -43,7 +43,9 @@ class button(selectable):
         self.width = width
         self.height = height
         self.radius = radius
+        
         self._text = text
+        self.text_size = text_size
         
         if purpose_func:
             self.purpose_func = purpose_func
@@ -95,7 +97,7 @@ class button(selectable):
                 text_y = int(self.y + self.y_offset+(self.height -text_dim[1])/2) - 1 
                 
                 #place text
-                io.text(text_x,text_y,self.text,cur_text,cur_color)
+                io.text(text_x,text_y,self.text,cur_text,cur_color, size = self.text_size)
     
     def clear(self):
         self.active = 0
@@ -226,24 +228,25 @@ class nidos(navigable):
         if not (0 <= nexty < self.rows):
             chgx += get_direction(nexty)
         
-        print(chgx,chgy)
+        #print(chgx,chgy)
         nextx = nextx+chgx
         nexty = nexty+chgy
         
         #if chgx*self.move_mode[0] or chgy*self.move_mode[1]:
-        print(not(0 <= nextx < self.cols) and not(0 <= nexty < self.rows))
-        if not(0 <= nextx < self.cols) and not(0 <= nexty < self.rows):
+        #print(not(0 <= nextx < self.cols) and not(0 <= nexty < self.rows))
+        if not(0 <= nextx < self.cols) and not(0 <= nexty < self.rows) and (chgx + chgy):
             try:
-                (self.superior.move(chgx*self.move_mode[0] + chgy*self.move_mode[1]))
+                (self.superior.move(chgx + chgy))
+                #(self.superior.move(chgx*self.move_mode[0] + chgy*self.move_mode[1]))
                     
                 #self.superior.move(get_direction(sup_dir) * bool(abs(sup_dir) == (self.selected[0] + self.selected[1] )))
                 #self.superior.move(chgx,chgy)
             except:
                 pass 
-        
-        self.switch((nextx) % self.cols, (nexty) % self.rows) 
-            
-        del nextx, nexty, chgx, chgy
+        else:
+            self.switch((nextx) % self.cols, (nexty) % self.rows) 
+                
+            del nextx, nexty, chgx, chgy
     
     def press(self, animate = 1):
         if self.active:
