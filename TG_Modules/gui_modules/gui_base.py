@@ -132,6 +132,8 @@ class navigable(gui_obj):
     is_navigable = True
     is_refreshable = False
     
+    
+    
     def __init__(self,x,y,width,height, move_mode = (1,1), superior = None, place = 1, 
                     color_clear = io.background_color):
         self._set_id() # YOU MUST DO THIS
@@ -153,9 +155,12 @@ class navigable(gui_obj):
         #instead of moving switch directly to the coords
         raise NotImplementedError('TG: switch method not implemented for:'+str(type(self)))
     
+    
+    #optional
     def press(self):
         # execute the currently selected thing that has been navigated to
         raise NotImplementedError('TG: switch method not implemented for:'+str(type(self)))
+
 
 
 '''class refreshable(gui_obj):
