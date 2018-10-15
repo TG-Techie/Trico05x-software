@@ -95,13 +95,13 @@ class text(valued):
     def value(self,valin):
         valin = str(valin)
         if valin != self._value:
-            #print(valin)
+
             valin = valin.split('\n')
-            
+
             if not self.top_down:
                 valin = valin[-1::]
-                
-            valin = valin[0:self.text_rows]
+            
+            valin = valin[0:self.text_rows + 1]
             
             # break into lines by enter and add as list components 
             nextval = []
@@ -115,7 +115,7 @@ class text(valued):
             for line in nextval:
                 valout += '\n' + line 
             
-            self._value = valout[1:]
+            self._value = valout[1::]
             
             if self.active:
                 self.sub_place()
