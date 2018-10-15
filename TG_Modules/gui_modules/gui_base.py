@@ -60,7 +60,8 @@ class valued(gui_obj):
         if new_val != self._value:
             #self.clear() #SHOULD HAVE THIS??
             self._value = new_val
-            self.place()
+            if self.active:
+                self.place()
         
 
 class selectable(gui_obj):

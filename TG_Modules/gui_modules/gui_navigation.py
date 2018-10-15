@@ -299,7 +299,7 @@ class panel(gui_obj):
     def add(self, **kwargs):
         for key,value in kwargs.items():
             try:
-                if getattr(value, 'is_gui_obj') and hasattr(value,'_gui_id'):
+                if hasattr(value, 'is_gui_obj') and hasattr(value,'_gui_id'):
                     #set into this panel isntance
                     setattr(self, key, value)
                     #add the new value the contents list
@@ -311,6 +311,8 @@ class panel(gui_obj):
                         self.nav = pointer
                     
                     return getattr(self, key)
+                else:
+                    raise TypeError('TG: Suspected: tried to add a non gui object to panel')
             except AttributeError: 
                 raise TypeError('TG: Suspected: tried to add a non gui object to panel')
                 
@@ -371,6 +373,7 @@ class window(gui_obj):
         self.active = 0
         
         self.contents = []
+        self.index = []
         
         #self.add_panel()
         self._cur_pos = 0
@@ -402,9 +405,11 @@ class window(gui_obj):
         setattr(self,panel_name, panel(self.x,self.y,self.width,self.height, color_clear = self.color_clear,
             background = self.background))
         
+        self.contents.append(getattr(self,panel_name))
+        
         #add to contents index desired
         if index:
-            self.contents.append(getattr(self,panel_name))
+            self.index.append(getattr(self,panel_name))
         
         #add it as an attribute with above given name 
         if name != None:
@@ -428,28 +433,35 @@ class window(gui_obj):
     def switch(self, valin):
         #print(type(valin))
         if type(valin) == int:
-            
-            #print('int entered')
-            
-            if self.contents[valin] != self.current:
+            if self.index[valin] != self.current:
                 self.clear()
                 self._cur_pos = valin
-                self.current = self.contents[self._cur_pos]
+                self.current = self.index[self._cur_pos]
                 self.place()
             
                 
         elif type(valin) == str:
-            self.current = getattr(self,valin)
+            if self.current != getattr(self,valin):
+                self.clear()
+                self.index = getattr(self,valin)
+                self.place()
+            
+        elif valin in self.index:
+            if self.current != valin:
+                self.clear()
+                self.current = valin
+                self.place()
+            
         
-        elif hasattr(self, valin):
-            self.current = valin
+        #if self.active:
+            #self.place()
         
     def move(self,direction):
         next_pos = self._cur_pos + get_direction(direction)
         
         if self.move_loop:
-            next_pos = next_pos % len( self.contents)
+            next_pos = next_pos % len( self.index)
         else:
-            next_pos = max(0, min(next_pos, len(self.contents)-1) )
+            next_pos = max(0, min(next_pos, len(self.index)-1) )
         #print('win side move',next_pos)
         self.switch(next_pos)

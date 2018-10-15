@@ -10,7 +10,7 @@
 
 
 # my choosen scrren library:
-from staging.disp import disp,color as disp_color
+from tg_io.staging.disp import disp,color as disp_color
 from tg_io.std_colors import *
 
 ####enter these:
@@ -51,5 +51,4 @@ def text_dimensions(x,y,text, size = 1):
 def fill(color):
     disp.fill(color)
     del color
-
 

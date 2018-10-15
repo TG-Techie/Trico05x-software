@@ -3,7 +3,7 @@
 #Author: Jonah Yolles-Murphy on Date: 10/12/18
 
 # set std colors for the hardware
-from staging.disp import color
+from tg_io.staging.disp import color
 
 
 # Defaults:
@@ -13,7 +13,7 @@ orange = color(255,128,0)
 yellow = color(255,255,0)
 green = color(0,255,0)
 blue = color(0,0,255)
-purple = color(128,0,255)
+purple = color(255,0,255)
 white = color(255,255,255)
 black = color(0,0,0)
 
