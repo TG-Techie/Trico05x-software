@@ -15,3 +15,17 @@ def dio(pin, direction = None, init_val = None):
             io.direction = digitalio.Direction.OUTPUT
             io.value = init_val
     return(io)
+    
+def pwm(pin, init_val = None, init_freq = None):
+    io = pulseio.PWMOut(pin)
+    
+    if init_val:
+        io.duty_cycle = init_val
+    else:
+        io.duty_cycle = 0
+    
+    if init_freq:
+        io.frequency = init_freq
+        
+    return io
+        

@@ -8,13 +8,14 @@ import time
 from tg_io.staging.pin_port import disp_spi,disp_cs, disp_dc, disp_rst, backlight
 clean_mem()
 # import easy digital io
-from tg_modules.make_ios import dio
+from tg_modules.make_ios import dio, pwm
 clean_mem()
 
 
 #start backlight in off position
-backlite = dio(backlight,0,False)
-backlite.value = False
+#backlite = dio(backlight,0,False)
+#backlite.value = False
+backlite = pwm(backlight, 0)
 del backlight
 clean_mem()
 
@@ -36,8 +37,8 @@ clean_mem()
 
 #start with black screen and elimiate noise
 disp.fill(0)
-backlite.value = True
-    
+#backlite.value = True
+backlite.duty_cycle = 2**16 -1 
 
 
       

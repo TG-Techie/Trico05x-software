@@ -6,16 +6,22 @@
 #this means please do not change the line stating with define in this document
 #only change the contense of the funct s
 
-#DEFAULTS AT BOTTOM
+# my choosen screen libaray:
+from tg_io.staging.disp import disp,color as disp_color, backlite
 
-
-# my choosen scrren library:
-from tg_io.staging.disp import disp,color as disp_color
+# this get std colors from lib do not change
 from tg_io.std_colors import *
 
 ####enter these:
 screen_width = disp.width
 screen_height = disp.height
+
+def set_backlight(value):
+    # if you have only a digital screen backlight change this
+    backlite.duty_cycle = int(value * (2**16 -1))
+
+def get_backlight():
+    return (backlite.duty_cycle / (2**16 -1))
 
 def color(r,g,b):
     # you will get 255 data !!!!!!
@@ -51,4 +57,3 @@ def text_dimensions(x,y,text, size = 1):
 def fill(color):
     disp.fill(color)
     del color
-
